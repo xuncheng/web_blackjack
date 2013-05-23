@@ -1,6 +1,5 @@
 require 'rubygems'
 require 'sinatra'
-require 'pry'
 
 set :sessions, true
 set :haml, :layout_engine => :erb
