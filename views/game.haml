@@ -1,0 +1,32 @@
+- if @play_again
+  %div 
+    %b Play again? 
+    %a.btn.btn-primary{:href => "/game"}Yes
+    %a.btn{:href => "/goodbay"}No
+
+%h3 Hello #{session[:player_name]}, welcome to Blackjack!
+
+- if @show_dealer_cards
+  .well
+    %h4 Dealer's Cards:
+    -session[:dealer_cards].each do |card|
+      %img{:src => "/images/cards/#{card[0]}_#{card[1]}.jpg"}
+- elsif
+  .well
+    %h4 Dealer's Cards:
+    %img{:src => "/images/cards/cover.jpg"}
+    %img{:src => "/images/cards/#{session[:dealer_cards][1][0]}_#{session[:dealer_cards][1][1]}.jpg"}
+
+.well
+  %h4 Your Cards:
+  -session[:player_cards].each do |card|
+    %img{:src => "/images/cards/#{card[0]}_#{card[1]}.jpg"} 
+
+- if @show_hit_or_stay_buttons
+  %p 
+    %h4 You have #{calculate_total(session[:player_cards])}. What woule you like to do?
+
+    %form#hit_form{:action => '/game/player/hit', :method => 'post'} 
+      %input.btn.btn-success{:type => 'submit', :value => 'Hit'}/ 
+    %form#stay_form{:action => '/game/player/stay', :method => 'post'} 
+      %input.btn.btn-warning{:type => "submit", :value => 'Stay'}/ 
