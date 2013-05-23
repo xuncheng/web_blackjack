@@ -2,7 +2,6 @@ require 'rubygems'
 require 'sinatra'
 
 set :sessions, true
-set :haml, :layout_engine => :erb
 
 helpers do
   def calculate_total(cards)
@@ -27,6 +26,11 @@ helpers do
 
     total
   end
+
+  def card_image(card)
+    # ['hearts', '2'], ['spades', 'jack'], ...
+    "<img src='/images/cards/#{card[0]}_#{card[1]}.jpg'>"
+  end
 end
 
 before do
@@ -43,13 +47,13 @@ get '/' do
 end
 
 get '/new_player' do
-  haml :new_player
+  erb :new_player
 end
 
 post '/new_player' do
   if params[:player_name].empty?
     @error = "Name is required."
-    halt haml(:new_player)
+    halt erb(:new_player)
   end
 
   session[:player_name] = params[:player_name].downcase.capitalize
@@ -79,7 +83,7 @@ get '/game' do
     @play_again = true
   end
 
-  haml :game
+  erb :game
 end
 
 post '/game/player/hit' do
@@ -96,7 +100,7 @@ post '/game/player/hit' do
     @play_again = true
   end
 
-  haml :game
+  erb :game
 end
 
 post '/game/player/stay' do
@@ -123,7 +127,7 @@ get '/game/dealer' do
     redirect '/game/dealer/hit'
   end
   
-  haml :game
+  erb :game
 end
 
 get '/game/dealer/hit' do
@@ -148,9 +152,9 @@ get '/game/compare' do
     @play_again = true
   end
 
-  haml :game
+  erb :game
 end
 
 get '/goodbay' do
-  haml '%h3 Goodbye #{session[:player_name]}, thanks for playing!!!'
+  erb '<h3>Goodbye <%= session[:player_name] %>, thanks for playing!!!</h3>'
 end

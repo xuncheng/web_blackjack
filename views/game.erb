@@ -1,0 +1,43 @@
+<% if @play_again %>
+  <div>
+    <b>Play again?</b>
+    <a href="/game" class="btn btn-primary">Yes</a>
+    <a href="/goodbay" class="btn">No</a>
+  </div>
+<% end %>
+
+<h3>Hello <%= session[:player_name] %>, welcome to Blackjack!</h3>
+
+<% if @show_dealer_cards %>
+  <div class="well">
+    <h4>Dealer's Cards:</h4>
+    <% session[:dealer_cards].each do |card| %>
+      <%= card_image(card) %>
+    <% end %>
+  </div>
+<% else %>
+  <div class="well">
+    <h4>Dealer's Cards:</h4>
+    <img src="/images/cards/cover.jpg">
+    <%= card_image(session[:dealer_cards][1]) %>
+  </div>
+<% end %>
+
+<div class="well">
+  <h4>Your Cards:</h4>
+  <% session[:player_cards].each do |card| %>
+    <%= card_image(card) %>
+  <% end %>
+</div>
+
+<% if @show_hit_or_stay_buttons %>
+  <h4>
+    You have <%= calculate_total(session[:player_cards]) %>. What woule you like to do?
+  </h4>
+  <form action="/game/player/hit" id="hit_form" method="post">
+    <input type="submit" class="btn btn-success" value="Hit">
+  </form>
+  <form action="/game/player/stay" id="stay_form" method="post">
+    <input type="submit" class="btn btn-warning" value="Stay">
+  </form>
+<% end %>
