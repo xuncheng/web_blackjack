@@ -38,19 +38,21 @@ helpers do
   def winner!(msg)
     @play_again = true
     @show_hit_or_stay_buttons = false
-    @success = "<strong>#{session[:player_name]} win!</strong> #{msg}"
+    session[:player_pot] = session[:player_pot].to_i + session[:player_bet].to_i
+    @success = "<strong>#{session[:player_name]} win!</strong> #{msg} #{session[:player_name]} now has <strong>$#{session[:player_pot]}</strong>."
   end
 
   def loser!(msg)
     @play_again = true
     @show_hit_or_stay_buttons = false
-    @error = "<strong>#{session[:player_name]} lose!</strong> #{msg}"
+    session[:player_pot] = session[:player_pot].to_i - session[:player_bet].to_i
+    @error = "<strong>#{session[:player_name]} lose!</strong> #{msg} #{session[:player_name]} now has <strong>$#{session[:player_pot]}</strong>."
   end
 
   def tie!(msg)
     @play_again = true
     @show_hit_or_stay_buttons = false
-    @success = "<strong>It's a tie!</strong> #{msg}"
+    @success = "<strong>It's a tie!</strong> #{msg} #{session[:player_name]} now has <strong>$#{session[:player_pot]}</strong>."
   end
 end
 
@@ -67,6 +69,7 @@ get '/' do
 end
 
 get '/new_player' do
+  session[:player_pot] = 500
   erb :new_player
 end
 
@@ -77,7 +80,24 @@ post '/new_player' do
   end
 
   session[:player_name] = params[:player_name].downcase.capitalize
-  redirect '/game'
+  redirect '/bet'
+end
+
+get '/bet' do
+  erb :bet
+end
+
+post '/bet' do
+  if params[:bet_amount].nil? || params[:bet_amount].to_i == 0
+    @error = "Must make a bet."
+    halt erb(:bet)
+  elsif params[:bet_amount].to_i > session[:player_pot].to_i
+    @error = "Bet amount cannot be greater than what you have ($#{session[:player_pot]})"
+    halt erb(:bet)
+  else
+    session[:player_bet] = params[:bet_amount]
+    redirect '/game'
+  end
 end
 
 get '/game' do
@@ -156,7 +176,7 @@ get '/game/compare' do
   if player_total > dealer_total
     winner!("#{session[:player_name]}'s total is #{player_total} and dealer's total is #{dealer_total}.")
   elsif player_total < dealer_total
-    loser!("#{session[:plyaer_name]}'s total is #{player_total} and dealer's total is #{dealer_total}.")
+    loser!("#{session[:player_name]}'s total is #{player_total} and dealer's total is #{dealer_total}.")
   else
     tie!("#{session[:player_name]} and dealer have equal totals of #{player_total}.")
   end
