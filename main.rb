@@ -136,13 +136,14 @@ get '/game/dealer' do
   elsif dealer_total >= DEALER_MIN_HIT # stay
     redirect '/game/compare'
   else # auto hit
-    redirect '/game/dealer/hit'
+    # redirect '/game/dealer/hit'
+    @show_dealer_hit_button = true
   end
 
   erb :game
 end
 
-get '/game/dealer/hit' do
+post '/game/dealer/hit' do
   session[:dealer_cards] << session[:deck].pop
   redirect '/game/dealer'
 end
